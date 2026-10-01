@@ -15,6 +15,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SelfImprovement
 import androidx.compose.material.icons.rounded.Spa
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +64,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -196,12 +200,17 @@ private fun NobiusScreen() {
 
     Box(Modifier.fillMaxSize().background(Color(0xFF100F28))) {
         if (videoId != 0) {
-            AndroidView(
-                factory = { viewContext ->
-                    SphericalGLSurfaceView(viewContext).also { player.setVideoSurfaceView(it) }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
+            Box(Modifier.fillMaxSize()) {
+                AndroidView(
+                    factory = { viewContext ->
+                        SphericalGLSurfaceView(viewContext).also { player.setVideoSurfaceView(it) }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+                HotspotRing(onClick = { showDiscovery = true }, modifier = Modifier.align(Alignment.Center).offset(x = (-112).dp, y = 38.dp))
+                HotspotRing(onClick = { showDiscovery = true }, modifier = Modifier.align(Alignment.Center).offset(x = 104.dp, y = 92.dp))
+                HotspotRing(onClick = { showDiscovery = true }, modifier = Modifier.align(Alignment.Center).offset(x = 12.dp, y = (-86).dp))
+            }
         } else {
             AlienLandscape(
                 yaw = yaw,
@@ -329,6 +338,20 @@ private fun pulse(context: Context, cue: HapticCue, intensity: Float) {
     val amplitude = (cue.amplitude * intensity).toInt().coerceIn(1, 255)
     val effect = VibrationEffect.createOneShot(cue.durationMs.toLong(), amplitude)
     vibrator.vibrate(effect)
+}
+
+
+@Composable
+private fun HotspotRing(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.size(38.dp),
+        shape = CircleShape,
+        color = Color(0x228EF3D1),
+        border = BorderStroke(1.dp, Color(0xAA9DF2D2))
+    ) {
+        Box(Modifier.padding(10.dp).border(1.dp, Color(0x779DF2D2), CircleShape))
+    }
 }
 
 @Composable
