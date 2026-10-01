@@ -1,0 +1,10 @@
+[
+  {"timeMs": 18000, "kind": "wind", "amplitude": 52, "durationMs": 420},
+  {"timeMs": 46500, "kind": "creature", "amplitude": 112, "durationMs": 24},
+  {"timeMs": 78000, "kind": "wind", "amplitude": 48, "durationMs": 520},
+  {"timeMs": 142000, "kind": "creature", "amplitude": 96, "durationMs": 22},
+  {"timeMs": 224000, "kind": "wind", "amplitude": 54, "durationMs": 460},
+  {"timeMs": 318000, "kind": "creature", "amplitude": 108, "durationMs": 20},
+  {"timeMs": 402000, "kind": "wind", "amplitude": 46, "durationMs": 560},
+  {"timeMs": 516000, "kind": "creature", "amplitude": 88, "durationMs": 24}
+]
