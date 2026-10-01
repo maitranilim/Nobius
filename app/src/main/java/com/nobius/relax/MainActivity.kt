@@ -16,6 +16,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +42,6 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SelfImprovement
 import androidx.compose.material.icons.rounded.Spa
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +65,6 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -343,14 +342,16 @@ private fun pulse(context: Context, cue: HapticCue, intensity: Float) {
 
 @Composable
 private fun HotspotRing(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(
-        onClick = onClick,
-        modifier = modifier.size(38.dp),
-        shape = CircleShape,
-        color = Color(0x228EF3D1),
-        border = BorderStroke(1.dp, Color(0xAA9DF2D2))
+    Box(
+        modifier
+            .size(38.dp)
+            .clip(CircleShape)
+            .background(Color(0x228EF3D1))
+            .border(1.dp, Color(0xAA9DF2D2), CircleShape)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
     ) {
-        Box(Modifier.padding(10.dp).border(1.dp, Color(0x779DF2D2), CircleShape))
+        Box(Modifier.size(16.dp).border(1.dp, Color(0x779DF2D2), CircleShape))
     }
 }
 
