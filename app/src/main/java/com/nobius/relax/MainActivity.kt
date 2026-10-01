@@ -114,6 +114,10 @@ private fun NobiusScreen() {
     val videoId = remember(context) {
         context.resources.getIdentifier("nobius_360", "raw", context.packageName)
     }
+    val audioId = remember(context) {
+        context.resources.getIdentifier("nobius_ambisonic", "raw", context.packageName)
+    }
+    val hasMedia = videoId != 0 || audioId != 0
     val player = remember(context) {
         ExoPlayer.Builder(context).build().apply {
             val audioAttributes = AudioAttributes.Builder()
@@ -123,8 +127,10 @@ private fun NobiusScreen() {
                 .build()
             setAudioAttributes(audioAttributes, true)
             repeatMode = androidx.media3.common.Player.REPEAT_MODE_ONE
-            if (videoId != 0) {
-                setMediaItem(MediaItem.fromUri("android.resource://${context.packageName}/$videoId"))
+            volume = intensity
+            val sourceId = if (videoId != 0) videoId else audioId
+            if (sourceId != 0) {
+                setMediaItem(MediaItem.fromUri("android.resource://${context.packageName}/$sourceId"))
                 prepare()
                 playWhenReady = true
             }
@@ -173,6 +179,7 @@ private fun NobiusScreen() {
         }.getOrDefault(emptyList())
     }
     LaunchedEffect(player, intensity, cues) {
+        player.volume = intensity
         var previousPosition = 0L
         var fired = mutableSetOf<Long>()
         while (true) {
@@ -244,7 +251,7 @@ private fun NobiusScreen() {
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (videoId != 0) {
+                    if (hasMedia) {
                         IconButton(
                             onClick = { if (player.isPlaying) player.pause() else player.play() },
                             modifier = Modifier
@@ -277,12 +284,15 @@ private fun NobiusScreen() {
                                 Spacer(Modifier.weight(1f))
                                 Icon(Icons.Rounded.Headphones, null, tint = Color(0xFFCCD5E0), modifier = Modifier.size(18.dp))
                                 Spacer(Modifier.width(5.dp))
-                                Text("Immersive audio", color = Color(0xFFCCD5E0), fontSize = 11.sp)
+                                Text(if (hasMedia) "Spatial mix" else "Scene preview", color = Color(0xFFCCD5E0), fontSize = 11.sp)
                             }
                             Spacer(Modifier.height(8.dp))
                             Text(
-                                if (videoId != 0) "Turn gently to explore · tap a glow to discover"
-                                else "Move your phone or drag to look around",
+                                when {
+                                    videoId != 0 -> "Turn gently to explore · tap a glow to discover"
+                                    audioId != 0 -> "Breathe with the sound · drag to look around"
+                                    else -> "Scene preview · add Nobius media for sound and timed haptics"
+                                },
                                 color = Color(0xFFB9C2D0), fontSize = 12.sp
                             )
                             Spacer(Modifier.height(7.dp))
