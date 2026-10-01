@@ -122,7 +122,7 @@ private fun NobiusScreen() {
                 .setSpatializationBehavior(C.SPATIALIZATION_BEHAVIOR_AUTO)
                 .build()
             setAudioAttributes(audioAttributes, true)
-            repeatMode = ExoPlayer.REPEAT_MODE_ONE
+            repeatMode = androidx.media3.common.Player.REPEAT_MODE_ONE
             if (videoId != 0) {
                 setMediaItem(MediaItem.fromUri("android.resource://${context.packageName}/$videoId"))
                 prepare()
@@ -304,11 +304,6 @@ private fun NobiusScreen() {
                     }
                 }
             }
-        } else {
-            // Focus Mode can be ended early with a quiet tap; its timer always restores controls.
-            Box(Modifier.fillMaxSize().pointerInput(Unit) {
-                detectTapGestures { focusMode = false }
-            })
         }
     }
 }
@@ -361,7 +356,7 @@ private fun AlienLandscape(yaw: Float, pitch: Float, modifier: Modifier = Modifi
     Canvas(modifier) {
         val w = size.width
         val h = size.height
-        drawRect(Brush.verticalGradient(listOf(Color(0xFF39264E), Color(0xFF8D5260), Color(0xFFEE9A70)), h))
+        drawRect(Brush.verticalGradient(listOf(Color(0xFF39264E), Color(0xFF8D5260), Color(0xFFEE9A70)), startY = 0f, endY = h))
         val offset = (yaw * 95f).coerceIn(-150f, 150f)
         // Twin moons and a soft atmospheric halo.
         drawCircle(Color(0x55FFB7AE), radius = w * .19f, center = Offset(w * .72f - offset * .18f, h * .32f + pitch * 24f))
