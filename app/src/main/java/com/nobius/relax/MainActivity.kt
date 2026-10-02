@@ -59,6 +59,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -183,18 +184,23 @@ private fun NobiusScreen() {
             }
         }.getOrDefault(emptyList())
     }
-    LaunchedEffect(player, intensity, cues) {
+    val currentIntensity by rememberUpdatedState(intensity)
+    LaunchedEffect(player, intensity) {
         player.volume = intensity
-        var previousPosition = 0L
-        var fired = mutableSetOf<Long>()
+    }
+    LaunchedEffect(player, cues) {
+        var previousPosition = player.currentPosition.coerceAtLeast(0L)
+        val fired = mutableSetOf<Long>()
         while (true) {
             delay(100)
             val now = player.currentPosition.coerceAtLeast(0L)
             if (now + 700 < previousPosition) fired.clear()
-            cues.firstOrNull { it.timeMs <= now && it.timeMs > previousPosition && it.timeMs !in fired }?.let { cue ->
-                fired.add(cue.timeMs)
-                if (intensity > 0.08f) pulse(context, cue, intensity)
-            }
+            cues.asSequence()
+                .filter { it.timeMs > previousPosition && it.timeMs <= now && it.timeMs !in fired }
+                .forEach { cue ->
+                    fired.add(cue.timeMs)
+                    if (currentIntensity > 0.08f) pulse(context, cue, currentIntensity)
+                }
             previousPosition = now
         }
     }
