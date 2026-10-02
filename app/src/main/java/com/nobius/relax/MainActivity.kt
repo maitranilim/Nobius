@@ -13,6 +13,7 @@ import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +30,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
@@ -386,7 +388,7 @@ private fun DiscoveryCard() {
 
 @Composable
 private fun AlienLandscape(yaw: Float, pitch: Float, modifier: Modifier = Modifier) {
-    val slowTime by androidx.compose.runtime.rememberInfiniteFloat()
+    val slowTime by rememberInfiniteFloat()
     Canvas(modifier) {
         val w = size.width
         val h = size.height
@@ -412,7 +414,7 @@ private fun AlienLandscape(yaw: Float, pitch: Float, modifier: Modifier = Modifi
             val x = (i * w / 12f + offset * (0.18f + i % 3 * .05f)).mod(w + 40f) - 20f
             val base = h * (.96f - (i % 3) * .025f)
             val height = h * (.16f + (i % 4) * .035f)
-            drawLine(Color(0xFF344B4B), Offset(x, base), Offset(x + sin(i * .7f + slowTime) * 7f, base - height), strokeWidth = 3f + i % 3)
+            drawLine(Color(0xFF344B4B), Offset(x, base), Offset(x + sin((i * .7f + slowTime).toDouble()).toFloat() * 7f, base - height), strokeWidth = 3f + i % 3)
             val glow = if (i % 2 == 0) Color(0xFF91F0C5) else Color(0xFFB79AF5)
             drawCircle(glow.copy(alpha = .72f), radius = 5f + i % 3, center = Offset(x, base - height))
             drawCircle(glow.copy(alpha = .2f), radius = 15f + i % 4, center = Offset(x, base - height))
@@ -420,7 +422,7 @@ private fun AlienLandscape(yaw: Float, pitch: Float, modifier: Modifier = Modifi
         // Three quiet, discoverable rings.
         val rings = listOf(Offset(w * .22f - offset * .08f, h * .57f), Offset(w * .77f - offset * .12f, h * .68f), Offset(w * .53f, h * .48f))
         rings.forEachIndexed { index, point ->
-            val pulse = 1f + .1f * sin(slowTime + index)
+            val pulse = 1f + .1f * sin((slowTime + index).toDouble()).toFloat()
             drawCircle(Color(0x558EF3D1), radius = 12f * pulse, center = point, style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2f))
             drawCircle(Color(0x338EF3D1), radius = 20f * pulse, center = point, style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1f))
         }
@@ -428,13 +430,13 @@ private fun AlienLandscape(yaw: Float, pitch: Float, modifier: Modifier = Modifi
         for (i in 0..28) {
             val x = ((i * 97) % 997) / 997f * w
             val y = ((i * 61) % 499) / 499f * h * .47f
-            drawCircle(Color.White.copy(alpha = .28f + .18f * sin(slowTime + i)), radius = 1.2f, center = Offset(x, y))
+            drawCircle(Color.White.copy(alpha = .28f + .18f * sin((slowTime + i).toDouble()).toFloat()), radius = 1.2f, center = Offset(x, y))
         }
     }
 }
 
-@androidx.compose.runtime.Composable
-private fun androidx.compose.runtime.rememberInfiniteFloat(): androidx.compose.runtime.State<Float> {
+@Composable
+private fun rememberInfiniteFloat(): androidx.compose.runtime.State<Float> {
     val transition = androidx.compose.animation.core.rememberInfiniteTransition(label = "landscape")
     return transition.animateFloat(
         initialValue = 0f,
